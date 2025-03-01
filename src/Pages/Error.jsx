@@ -1,5 +1,9 @@
 import React from "react";
 
 export default function Error() {
-  return <div>404 Page not found</div>;
+  return (
+    <div>
+      <img src="../Assets/Images/404.png" alt="" />
+    </div>
+  );
 }
