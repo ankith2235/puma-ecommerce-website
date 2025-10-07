@@ -2,29 +2,33 @@ pipeline {
     agent any
 
     triggers {
-        // Trigger pipeline automatically when there's a push on the 'develop' branch
-        pollSCM('* * * * *')
+        // Trigger via webhook (preferred) or poll every 5 minutes if webhook not used
+        pollSCM('H/5 * * * *')
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                git branch: 'develop', url: 'https://github.com/your-username/your-repo.git'
+                echo 'Fetching latest code from develop branch...'
+                git branch: 'develop', url: 'https://github.com/ankith2235/puma-ecommerce-website.git'
             }
         }
 
-        stage('Pull to Folder') {
+        stage('Deploy to Folder') {
             steps {
-                echo 'Pulling repository content to /var/www/myproject'
-                sh 'mkdir -p /var/www/myproject'
-                sh 'cp -r * /var/www/myproject/'
+                echo 'Deploying code to /var/www/puma-ecommerce...'
+                // Create folder if not exists
+                sh 'mkdir -p /var/www/puma-ecommerce'
+                // Copy code safely, excluding .git and Jenkins workspace files
+                sh 'rsync -av --exclude=".git" --exclude="Jenkinsfile" ./ /var/www/puma-ecommerce/'
             }
         }
 
         stage('Build Complete') {
             steps {
-                echo 'Build and sync completed successfully!'
+                echo '✅ Build and deployment completed successfully!'
             }
         }
     }
 }
+
